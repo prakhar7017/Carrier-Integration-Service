@@ -1,0 +1,30 @@
+{
+  "origin": {
+    "street": ["123 Main Street"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": "US"
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": [
+    {
+      "weight": 5,
+      "dimensions": {
+        "length": 10,
+        "width": 8,
+        "height": 6
+      }
+    },
+    {
+      "weight": 3
+    }
+  ],
+  "serviceLevel": "GROUND"
+}

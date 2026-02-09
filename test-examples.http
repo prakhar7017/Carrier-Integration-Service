@@ -1,0 +1,179 @@
+### Carrier Integration Service API Tests
+### Use with VS Code REST Client extension or similar tools
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### 1. Health Check
+GET {{baseUrl}}/health
+
+### 2. Get Rates - Basic Request
+POST {{baseUrl}}/api/rates
+Content-Type: {{contentType}}
+
+{
+  "origin": {
+    "street": ["123 Main Street"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": "US"
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": [
+    {
+      "weight": 5
+    }
+  ]
+}
+
+### 3. Get Rates - Multiple Packages with Dimensions
+POST {{baseUrl}}/api/rates
+Content-Type: {{contentType}}
+
+{
+  "origin": {
+    "street": ["123 Main Street", "Suite 100"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": "US"
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": [
+    {
+      "weight": 5,
+      "dimensions": {
+        "length": 10,
+        "width": 8,
+        "height": 6
+      }
+    },
+    {
+      "weight": 3,
+      "dimensions": {
+        "length": 8,
+        "width": 6,
+        "height": 4
+      }
+    }
+  ],
+  "serviceLevel": "GROUND"
+}
+
+### 4. Get Rates from Specific Carrier (UPS)
+POST {{baseUrl}}/api/rates/UPS
+Content-Type: {{contentType}}
+
+{
+  "origin": {
+    "street": ["123 Main Street"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": "US"
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": [
+    {
+      "weight": 10,
+      "dimensions": {
+        "length": 12,
+        "width": 10,
+        "height": 8
+      }
+    }
+  ]
+}
+
+### 5. Error Test - Invalid Request (Empty Packages)
+POST {{baseUrl}}/api/rates
+Content-Type: {{contentType}}
+
+{
+  "origin": {
+    "street": ["123 Main Street"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": "US"
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": []
+}
+
+### 6. Error Test - Invalid Address (Missing Country)
+POST {{baseUrl}}/api/rates
+Content-Type: {{contentType}}
+
+{
+  "origin": {
+    "street": ["123 Main Street"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": ""
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": [
+    {
+      "weight": 5
+    }
+  ]
+}
+
+### 7. Error Test - Carrier Not Found
+POST {{baseUrl}}/api/rates/FEDEX
+Content-Type: {{contentType}}
+
+{
+  "origin": {
+    "street": ["123 Main Street"],
+    "city": "New York",
+    "stateOrProvince": "NY",
+    "postalCode": "10001",
+    "country": "US"
+  },
+  "destination": {
+    "street": ["456 Oak Avenue"],
+    "city": "Los Angeles",
+    "stateOrProvince": "CA",
+    "postalCode": "90001",
+    "country": "US"
+  },
+  "packages": [
+    {
+      "weight": 5
+    }
+  ]
+}

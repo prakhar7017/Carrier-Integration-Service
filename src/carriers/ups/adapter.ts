@@ -30,9 +30,7 @@ export class UPSAdapter implements Carrier {
 
   async getRates(request: RateRequest): Promise<RateQuote[]> {
     const upsRequest = this.transformRequest(request);
-    console.log('UPS request:', upsRequest);
     const accessToken = await this.config.oauthClient.getAccessToken();
-    console.log('Access token:', accessToken);
     const httpRequest: HttpRequest = {
       url: `${this.config.baseUrl}/api/rating/v1/Rate`,
       method: 'POST',

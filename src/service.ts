@@ -27,7 +27,6 @@ export class CarrierIntegrationService {
   async getRates(request: RateRequest): Promise<RateQuote[]> {
     // Validate input
     const validationResult = RateRequestSchema.safeParse(request);
-    console.log('Validation result:', validationResult);
     if (!validationResult.success) {
       throw new CarrierIntegrationError(
         ErrorCode.INVALID_REQUEST,
@@ -47,13 +46,10 @@ export class CarrierIntegrationService {
           return { carrier: carrier.getName(), quotes: [] as RateQuote[] };
         })
     );
-    console.log('Carrier promises:', carrierPromises);
 
     const results = await Promise.all(carrierPromises);
-    console.log('Results:', results);
     // Flatten all quotes into a single array
     const quotes = results.flatMap((result) => result.quotes);
-    console.log('Quotes:', quotes);
     return quotes;
   }
 

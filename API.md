@@ -1,10 +1,18 @@
-# Carrier Integration Service API Documentation
+# Carrier Integration Service — API Reference
+
+REST API for the Carrier Integration Service. Use this for rate shopping and health checks.
+
+---
 
 ## Base URL
 
-```
+```text
 http://localhost:3000
 ```
+
+Default port can be overridden with the `PORT` environment variable.
+
+---
 
 ## Endpoints
 
@@ -14,7 +22,8 @@ http://localhost:3000
 
 Check if the service is running.
 
-**Response:**
+**Response (200 OK):**
+
 ```json
 {
   "status": "ok",
@@ -23,6 +32,7 @@ Check if the service is running.
 ```
 
 **Example:**
+
 ```bash
 curl http://localhost:3000/health
 ```
@@ -35,7 +45,8 @@ curl http://localhost:3000/health
 
 Get shipping rate quotes from all configured carriers.
 
-**Request Body:**
+**Request body:** JSON with origin, destination, and packages.
+
 ```json
 {
   "origin": {
@@ -62,11 +73,14 @@ Get shipping rate quotes from all configured carriers.
       }
     }
   ],
-  "serviceLevel": "GROUND"  // Optional
+  "serviceLevel": "GROUND"
 }
 ```
 
-**Response (Success):**
+`serviceLevel` is optional (e.g. `"GROUND"`, `"EXPRESS"`).
+
+**Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -94,7 +108,8 @@ Get shipping rate quotes from all configured carriers.
 }
 ```
 
-**Response (Error):**
+**Response (4xx/5xx):**
+
 ```json
 {
   "success": false,
@@ -106,6 +121,7 @@ Get shipping rate quotes from all configured carriers.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/api/rates \
   -H "Content-Type: application/json" \
@@ -120,12 +136,13 @@ curl -X POST http://localhost:3000/api/rates \
 
 Get shipping rate quotes from a specific carrier.
 
-**URL Parameters:**
-- `carrier` - Carrier name (e.g., "UPS", "ups", "FedEx")
+| Parameter | Description |
+|-----------|-------------|
+| `carrier` | Carrier name (e.g. `UPS`, `ups`) |
 
-**Request Body:** Same as `/api/rates`
+**Request body:** Same as `POST /api/rates`.
 
-**Response (Success):**
+**Response (200 OK):**
 ```json
 {
   "success": true,
@@ -145,7 +162,8 @@ Get shipping rate quotes from a specific carrier.
 }
 ```
 
-**Response (Error - Carrier Not Found):**
+**Response (404 — carrier not configured):**
+
 ```json
 {
   "success": false,
@@ -157,6 +175,7 @@ Get shipping rate quotes from a specific carrier.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST http://localhost:3000/api/rates/UPS \
   -H "Content-Type: application/json" \
@@ -168,33 +187,49 @@ curl -X POST http://localhost:3000/api/rates/UPS \
 ## Error Codes
 
 | HTTP Status | Error Code | Description |
-|------------|------------|-------------|
+|-------------|------------|-------------|
 | 400 | `INVALID_REQUEST` | Invalid request format or missing required fields |
 | 401 | `AUTH_FAILED` | OAuth authentication failed |
 | 429 | `RATE_LIMITED` | API rate limit exceeded |
-| 502 | `MALFORMED_RESPONSE`, `NETWORK_ERROR`, `TIMEOUT` | Carrier API issues |
+| 502 | `MALFORMED_RESPONSE`, `NETWORK_ERROR`, `TIMEOUT` | Carrier API or network issues |
 | 503 | `CARRIER_UNAVAILABLE` | Carrier service unavailable |
-| 500 | `INTERNAL_ERROR` | Internal server error |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
+Error response body:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable message",
+    "cause": "Optional cause message"
+  }
+}
+```
 
 ---
 
 ## Testing Examples
 
-### Using cURL
+### cURL
 
-**Health Check:**
+**Health check:**
+
 ```bash
 curl http://localhost:3000/health
 ```
 
-**Get Rates (using file):**
+**Get rates (from file):**
+
 ```bash
 curl -X POST http://localhost:3000/api/rates \
   -H "Content-Type: application/json" \
   -d @test-request.json
 ```
 
-**Get Rates (inline JSON):**
+**Get rates (inline JSON):**
+
 ```bash
 curl -X POST http://localhost:3000/api/rates \
   -H "Content-Type: application/json" \
@@ -217,14 +252,15 @@ curl -X POST http://localhost:3000/api/rates \
   }'
 ```
 
-**Get Rates from Specific Carrier:**
+**Get rates for one carrier:**
+
 ```bash
 curl -X POST http://localhost:3000/api/rates/UPS \
   -H "Content-Type: application/json" \
   -d @test-request.json
 ```
 
-### Using JavaScript/TypeScript
+### JavaScript / TypeScript
 
 ```typescript
 const response = await fetch('http://localhost:3000/api/rates', {
@@ -253,31 +289,32 @@ const data = await response.json();
 console.log(data);
 ```
 
-### Using Postman
+### Postman / REST clients
 
-1. Import the collection (create a Postman collection with these endpoints)
-2. Set the base URL to `http://localhost:3000`
-3. Use the `test-request.json` file for request body
-4. Send requests to test each endpoint
+1. Base URL: `http://localhost:3000`
+2. For `POST /api/rates` and `POST /api/rates/:carrier`, use `Content-Type: application/json` and the same body as in the examples above (or use `test-request.json`).
 
 ---
 
 ## Environment Variables
 
-**For Mock Mode (Default - No credentials needed):**
+**Mock mode (default):**
+
 ```bash
-CARRIER_MODE=mock  # Optional, defaults to mock
-PORT=3000  # Optional, defaults to 3000
+CARRIER_MODE=mock   # optional
+PORT=3000           # optional
 ```
 
-**For Real Mode (Production - Credentials required):**
+**Real mode (production):**
+
 ```bash
 CARRIER_MODE=real
 UPS_CLIENT_ID=your_client_id
 UPS_CLIENT_SECRET=your_client_secret
-UPS_BASE_URL=https://wwwcie.ups.com  # Optional
-UPS_SHIPPER_NUMBER=your_shipper_number  # Optional
-PORT=3000  # Optional, defaults to 3000
+# Optional:
+UPS_BASE_URL=https://wwwcie.ups.com
+UPS_SHIPPER_NUMBER=your_shipper_number
+PORT=3000
 ```
 
-See [RUNTIME_MODES.md](./RUNTIME_MODES.md) for complete runtime mode documentation.
+See [README.md](./README.md#usage) for full details.

@@ -253,7 +253,10 @@ npm run build && npm start   # production
 | `/api/rates` | POST | Rates from all carriers |
 | `/api/rates/:carrier` | POST | Rates from one carrier (e.g. `UPS`) |
 
-Full request/response and error details: **[API.md](./API.md)**.
+**Documentation:**
+
+- **[API.md](./API.md)** — Request/response shapes, error codes, and examples
+- **[Postman](https://documenter.getpostman.com/view/24274037/2sBXcAHNNK)** — Interactive API documentation and collection
 
 **Example:**
 
